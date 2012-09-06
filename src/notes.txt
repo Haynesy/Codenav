@@ -1,0 +1,19 @@
+Version 1
+
+- 3D Interface with blocks.
+    Use maybe standard OpenGL 2.1 techniques.
+- Orthographic view for menus and options.
+- Show folder structure in 3D using blocks.
+- Open Files in folder structure.
+    Classes or program structure folded by default (Possible show program structure metrics).
+    Can choose to have interfaces applied to the object or separated (Will only apply to code in the src project,
+        there should be an option to allow all ).
+- Find or create a token parser to pass programming language files.
+- Add notes to files.
+- Re-arrange 3D blocks into groups, with ability to re-position groups for better organisation.
+
+Addition notes
+    - Interaction like the game homeworld
+    - Background like homeworld
+    - Maybe vim modes e.g Command, Edit, View
+
