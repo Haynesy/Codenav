@@ -1,17 +1,14 @@
 package adamhaynes.codenav;
 
-import adamhaynes.util.Print;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GLContext;
 
-import java.nio.FloatBuffer;
+import java.util.Random;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.util.glu.GLU.gluPerspective;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,13 +18,18 @@ import static org.lwjgl.opengl.GL20.*;
  */
 public class Codenav {
 
-    private final int WIDTH = 800;
-    private final int HEIGHT = 600;
+    private final int WIDTH = 640;
+    private final int HEIGHT = 480;
     private boolean running = false;
     private InputHandler input;
     private String TITLE = "Codenav";
     private int vertexBuffer;
     private int theProgram;
+    private int xPos = 0;
+    private int zPos = -20;
+    private Random random = new Random();
+    private float cubeRotateX = 45;
+    private float cubeRotateY = 45;
 
     public Codenav(){
 
@@ -50,6 +52,9 @@ public class Codenav {
             unProcessed += (now - lastFrameTime) / nsPerFrame;
             lastFrameTime = now;
 
+            if(Display.isCloseRequested())
+                running = false;
+
             while(unProcessed > 1){
                 unProcessed -= 1;
                 tick();
@@ -60,7 +65,8 @@ public class Codenav {
 
             if(System.currentTimeMillis() - currentFrameTime > 1000){
                 currentFrameTime += 1000;
-                Print.line(frames + " fps");
+                //Print.line(frames + " fps");
+                Display.setTitle(frames + " fps");
                 frames = 0;
 
             }
@@ -72,27 +78,71 @@ public class Codenav {
         Display.destroy();
     }
 
-    public void reshape(int width, int height){
-        glViewport(0, 0, width, height);
-    }
-
     private void render() {
 
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glEnableVertexAttribArray(0); // Use the current bound buffer
+        // Clear the screen
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Param 1: Unk
-        // Param 2: Each position contains 4 numbers
-        // Param 3: Numbers are of type float
-        // Param 4: Unk
-        // Param 5: Spacing between values
-        // Param 6: 0 offset in the buffer
-        glVertexAttribPointer(0, 4, GL_FLOAT, false, 0, 0);
+        // Reset the Model view
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
-        // Param 1: Draw Triangles
-        // Param 2: Start index
-        // Param 3: Number of indexes
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        cubeRotateY += input.leftright;
+        cubeRotateX += input.forwardback;
+
+        glTranslatef(xPos, 0, zPos);
+        glRotatef(cubeRotateX, 1, 0, 0);
+        glRotatef(cubeRotateY, 0, 1, 0);
+
+        cube();
+    }
+
+    private static void cube() {
+        glBegin(GL_QUADS);
+
+            // Top
+            glColor3f(1.0f, 0.5f, 0.0f);
+            glVertex3f( 1.0f, 1.0f, -1.0f);
+            glVertex3f(-1.0f, 1.0f, -1.0f);
+            glVertex3f(-1.0f, 1.0f, 1.0f);
+            glVertex3f( 1.0f, 1.0f, 1.0f);
+
+            // Bottom
+            glColor3f(0.0f, 1.5f, 0.0f);
+            glVertex3f( 1.0f, -1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f,  1.0f);
+            glVertex3f( 1.0f, -1.0f,  1.0f);
+
+            // Front
+            glColor3f(1.0f, 0.0f, 0.0f);
+            glVertex3f( 1.0f,  1.0f, 1.0f);
+            glVertex3f(-1.0f,  1.0f, 1.0f);
+            glVertex3f(-1.0f, -1.0f, 1.0f);
+            glVertex3f( 1.0f, -1.0f, 1.0f);
+
+            // Back
+            glColor3f(1.0f, 1.0f, 0.0f);
+            glVertex3f( 1.0f,  1.0f, -1.0f);
+            glVertex3f(-1.0f,  1.0f, -1.0f);
+            glVertex3f(-1.0f, -1.0f, -1.0f);
+            glVertex3f( 1.0f, -1.0f, -1.0f);
+
+            // Left
+            glColor3f(0.0f, 0.0f, 1.0f);
+            glVertex3f(-1.0f, 1.0f,  1.0f);
+            glVertex3f(-1.0f, 1.0f, -1.0f);
+            glVertex3f(-1.0f,-1.0f, -1.0f);
+            glVertex3f(-1.0f,-1.0f,  1.0f);
+
+            // Right
+            glColor3f(1.0f, 0.0f, 1.0f);
+            glVertex3f( 1.0f, 1.0f,  1.0f);
+            glVertex3f( 1.0f, 1.0f, -1.0f);
+            glVertex3f( 1.0f,-1.0f, -1.0f);
+            glVertex3f( 1.0f,-1.0f,  1.0f);
+
+        glEnd();
 
     }
 
@@ -100,8 +150,10 @@ public class Codenav {
 
         // Update input
         input.update();
-        if(Display.isCloseRequested() || input.escape)
+        if(input.escape)
             running = false;
+
+
     }
 
     private void initialise() {
@@ -121,64 +173,35 @@ public class Codenav {
             System.exit(-1);
         }
 
-        // Clear the screen
-        glClearColor(0.4f, 0.6f, 0.9f, 0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        // Set clear color
 
-        createVertexBuffer();
-        initialiseProgram();
+        glShadeModel(GL_SMOOTH);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL); // Less than or equal
+        glClearDepth(1.0);
+
+        establishProjectionMatrix();
+
+        //glEnable(GL_LIGHTING);
+        //glEnable(GL_LIGHT0);
     }
 
-    private String vertexShader = "#version 330\n\nlayout(location = 0) in vec4 position;\nvoid main()\n{\ngl_Position = position;\n}";
-    private String fragmentShader = "#version 330\n\n out vec4 outputColor;void main(){outputColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);}";
-    
-    private void initialiseProgram() {
-        int[] shaderList = new int[2];
-        shaderList[0] = CreateShader(GL_VERTEX_SHADER, vertexShader);
-        shaderList[1] = CreateShader(GL_FRAGMENT_SHADER, fragmentShader);
+    private void establishProjectionMatrix() {
+        //glViewport(0, 0, WIDTH, HEIGHT);
 
-        theProgram = CreateProgram(shaderList);
-        for(int item : shaderList)
-            glDeleteShader(item);
+        // Reset Projection matrix
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
 
-    }
+        gluPerspective(45.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 200.0f);
 
-    private int CreateProgram(int[] shaderList) {
-        return 0;
-    }
+        // Try to use the nicest calc
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        glEnable(GL_PERSPECTIVE_CORRECTION_HINT);
 
-    private int CreateShader(int shaderType, String shader) {
-        int theShader = glCreateShader(shaderType);
-        glShaderSource(theShader, shader);
-
-        glCompileShader(theShader);
-
-        int status;
-        status = glGetShader(theShader, GL_COMPILE_STATUS);
-        if(status == GL_FALSE){
-
-        }
-        return 0;
-    }
-
-    private static final float vertexPositions[] = {
-            0.75f, 0.75f, 0.0f, 1.0f,
-            0.75f, -0.75f, 0.0f, 1.0f,
-            -0.75f, -0.75f, 0.0f, 1.0f,
-        };
-    private void createVertexBuffer() {
-        vertexBuffer = glGenBuffers(); // Create a buffer
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer); // Bind the buffer
-
-        FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(vertexPositions.length);
-        floatBuffer.put(vertexPositions);
-        floatBuffer.flip();
-
-        // Fill buffer with data
-        glBufferData(GL_ARRAY_BUFFER, floatBuffer, GL_STATIC_DRAW);
-
-        // Unbind the buffer
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
     public static void start() {

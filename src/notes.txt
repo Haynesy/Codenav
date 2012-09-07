@@ -1,7 +1,5 @@
 Version 1
 
-- 3D Interface with blocks.
-    Use maybe standard OpenGL 2.1 techniques.
 - Orthographic view for menus and options.
 - Show folder structure in 3D using blocks.
 - Open Files in folder structure.
@@ -11,6 +9,10 @@ Version 1
 - Find or create a token parser to pass programming language files.
 - Add notes to files.
 - Re-arrange 3D blocks into groups, with ability to re-position groups for better organisation.
+
+Version 1 Done!
+- 3D Interface with cube.
+    Use maybe standard OpenGL 2.1 techniques.
 
 Addition notes
     - Interaction like the game homeworld
