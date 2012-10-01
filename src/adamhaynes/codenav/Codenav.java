@@ -5,8 +5,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GLContext;
 
-import java.util.Random;
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 
@@ -23,13 +21,7 @@ public class Codenav {
     private boolean running = false;
     private InputHandler input;
     private String TITLE = "Codenav";
-    private int vertexBuffer;
-    private int theProgram;
-    private int xPos = 0;
-    private int zPos = -20;
-    private Random random = new Random();
-    private float cubeRotateX = 45;
-    private float cubeRotateY = 45;
+    private CodeDisplay display;
 
     public Codenav(){
 
@@ -58,7 +50,7 @@ public class Codenav {
             while(unProcessed > 1){
                 unProcessed -= 1;
                 tick();
-                render();
+                display.render();
             }
 
             frames++;
@@ -78,74 +70,6 @@ public class Codenav {
         Display.destroy();
     }
 
-    private void render() {
-
-        // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Reset the Model view
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        cubeRotateY += input.leftright;
-        cubeRotateX += input.forwardback;
-
-        glTranslatef(xPos, 0, zPos);
-        glRotatef(cubeRotateX, 1, 0, 0);
-        glRotatef(cubeRotateY, 0, 1, 0);
-
-        cube();
-    }
-
-    private static void cube() {
-        glBegin(GL_QUADS);
-
-            // Top
-            glColor3f(1.0f, 0.5f, 0.0f);
-            glVertex3f( 1.0f, 1.0f, -1.0f);
-            glVertex3f(-1.0f, 1.0f, -1.0f);
-            glVertex3f(-1.0f, 1.0f, 1.0f);
-            glVertex3f( 1.0f, 1.0f, 1.0f);
-
-            // Bottom
-            glColor3f(0.0f, 1.5f, 0.0f);
-            glVertex3f( 1.0f, -1.0f, -1.0f);
-            glVertex3f(-1.0f, -1.0f, -1.0f);
-            glVertex3f(-1.0f, -1.0f,  1.0f);
-            glVertex3f( 1.0f, -1.0f,  1.0f);
-
-            // Front
-            glColor3f(1.0f, 0.0f, 0.0f);
-            glVertex3f( 1.0f,  1.0f, 1.0f);
-            glVertex3f(-1.0f,  1.0f, 1.0f);
-            glVertex3f(-1.0f, -1.0f, 1.0f);
-            glVertex3f( 1.0f, -1.0f, 1.0f);
-
-            // Back
-            glColor3f(1.0f, 1.0f, 0.0f);
-            glVertex3f( 1.0f,  1.0f, -1.0f);
-            glVertex3f(-1.0f,  1.0f, -1.0f);
-            glVertex3f(-1.0f, -1.0f, -1.0f);
-            glVertex3f( 1.0f, -1.0f, -1.0f);
-
-            // Left
-            glColor3f(0.0f, 0.0f, 1.0f);
-            glVertex3f(-1.0f, 1.0f,  1.0f);
-            glVertex3f(-1.0f, 1.0f, -1.0f);
-            glVertex3f(-1.0f,-1.0f, -1.0f);
-            glVertex3f(-1.0f,-1.0f,  1.0f);
-
-            // Right
-            glColor3f(1.0f, 0.0f, 1.0f);
-            glVertex3f( 1.0f, 1.0f,  1.0f);
-            glVertex3f( 1.0f, 1.0f, -1.0f);
-            glVertex3f( 1.0f,-1.0f, -1.0f);
-            glVertex3f( 1.0f,-1.0f,  1.0f);
-
-        glEnd();
-
-    }
-
     private void tick() {
 
         // Update input
@@ -159,7 +83,9 @@ public class Codenav {
     private void initialise() {
         DisplayMode mode = new DisplayMode(WIDTH, HEIGHT);
         Display.setTitle(TITLE);
+
         input = new InputHandler();
+        display = new CodeDisplay(input);
 
         try {
             Display.setDisplayMode(mode);

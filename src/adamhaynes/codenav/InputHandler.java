@@ -16,6 +16,8 @@ public class InputHandler {
     public boolean escape;
     public int forwardback;
     public int leftright;
+    public int zPos;
+    public int xPos;
 
 
     public void update(){
@@ -24,6 +26,8 @@ public class InputHandler {
 
         forwardback = 0;
         leftright = 0;
+        zPos = 0;
+        zPos = 0;
 
         if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
             escape = !escape;
@@ -39,5 +43,17 @@ public class InputHandler {
 
         if(Keyboard.isKeyDown(Keyboard.KEY_D))
             leftright += 1;
+
+        if(Keyboard.isKeyDown(Keyboard.KEY_UP))
+            zPos += 1 ;
+
+        if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+            zPos -= 1 ;
+
+        if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+            xPos -= 1 ;
+
+        if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+            xPos += 1 ;
     }
 }

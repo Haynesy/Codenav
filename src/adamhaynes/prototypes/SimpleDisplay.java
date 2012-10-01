@@ -19,7 +19,7 @@ public class SimpleDisplay {
 
         try {
             Display.setDisplayMode(new DisplayMode(800, 600));
-            Display.setTitle("Simple Display");
+            Display.setTitle("Simple CodeDisplay");
             Display.create();
         } catch (LWJGLException e) {
             e.printStackTrace();
